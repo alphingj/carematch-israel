@@ -1,0 +1,42 @@
+services:
+  - type: web
+    name: carematch-backend
+    runtime: python
+    repo: https://github.com/alphingj/carematch-israel
+    branch: main
+    rootDir: carematch_backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: carematch-db
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: carematch-redis
+          property: connectionString
+      - key: FIREBASE_CREDENTIALS
+        sync: false
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: "false"
+      - key: LOG_LEVEL
+        value: "INFO"
+      - key: CORS_ORIGINS
+        value: "https://carematch-israel.vercel.app,https://carematch-admin.vercel.app"
+      - key: MODULE_AUTO_DISCOVER
+        value: "true"
+
+databases:
+  - name: carematch-db
+    databaseName: carematch
+    user: carematch
+    plan: free
+
+services:
+  - type: redis
+    name: carematch-redis
+    plan: free
