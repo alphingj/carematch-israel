@@ -1,0 +1,98 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+    function isAdmin() {
+      return isAuthenticated() &&
+        (
+          (exists(/databases/$(database)/documents/users/$(request.auth.uid)) && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin') ||
+          (request.auth.token.email == "alphingrowthchannel@gmail.com" && request.auth.token.email_verified == true) ||
+          (request.auth.token.email == "alphingj@gmail.com" && request.auth.token.email_verified == true)
+        );
+    }
+    function hasOnlyAllowedFields(fields) {
+      return request.resource.data.keys().hasOnly(fields);
+    }
+    function hasRequiredFields(fields) {
+      return request.resource.data.keys().hasAll(fields);
+    }
+    function isDocOwner() {
+      return isAuthenticated() && request.auth.uid == resource.data.ownerId;
+    }
+    function uidUnchanged() {
+      return !('ownerId' in request.resource.data) || request.resource.data.ownerId == request.auth.uid;
+    }
+    function uidNotModified() {
+      return !('ownerId' in request.resource.data) || request.resource.data.ownerId == resource.data.ownerId;
+    }
+    
+    // ===============================================================
+    // Domain Validators
+    // ===============================================================
+    function isValidUser(data) {
+      return data.role in ['caregiver', 'resident', 'admin'] &&
+             data.name is string && data.name.size() > 0 && data.name.size() < 100 &&
+             data.phone is string && data.phone.size() <= 20 &&
+             data.onboardingCompleted is bool &&
+             (data.createdAt is timestamp || data.createdAt is string) &&
+             (!('gender' in data) || data.gender in ['Male', 'Female']) &&
+             (!('nationality' in data) || (data.nationality is string && data.nationality.size() < 100)) &&
+             (!('age' in data) || (data.age is number && data.age > 0 && data.age < 150)) &&
+             (!('languages' in data) || (data.languages is list && data.languages.size() <= 10)) &&
+             (!('drivingLicense' in data) || data.drivingLicense is bool) &&
+             (!('currentlyWorking' in data) || data.currentlyWorking is bool) &&
+             (!('workRequest' in data) || data.workRequest in ['Permanent', 'Reliever', 'Register reliever']) &&
+             (!('workArea' in data) || data.workArea in ['Area 1', 'Area 2', 'Area 3', 'All Area']);
+    }
+
+    function isValidJob(data) {
+      return data.ownerId is string &&
+             data.active is bool &&
+             data.title is string && data.title.size() > 0 && data.title.size() < 200 &&
+             data.area is string && data.area.size() > 0 && data.area.size() < 100 &&
+             data.contactName is string && data.contactName.size() > 0 && data.contactName.size() < 100 &&
+             data.contactPhone is string && data.contactPhone.size() > 0 && data.contactPhone.size() <= 20 &&
+             (data.createdAt is timestamp || data.createdAt is string) &&
+             (!('startDate' in data) || (data.startDate is string && data.startDate.size() <= 50)) &&
+             (!('endDate' in data) || (data.endDate is string && data.endDate.size() <= 50)) &&
+             (!('jobType' in data) || (data.jobType is string && data.jobType.size() <= 100)) &&
+             (!('patientGender' in data) || (data.patientGender is string && data.patientGender.size() <= 50)) &&
+             (!('patientAge' in data) || (data.patientAge is number && data.patientAge >= 0 && data.patientAge < 150)) &&
+             (!('languages' in data) || (data.languages is list && data.languages.size() <= 10)) &&
+             (!('livingAtHome' in data) || (data.livingAtHome is string && data.livingAtHome.size() <= 100)) &&
+             (!('pets' in data) || (data.pets is string && data.pets.size() <= 100)) &&
+             (!('clearMind' in data) || data.clearMind is bool) &&
+             (!('movement' in data) || (data.movement is string && data.movement.size() <= 100)) &&
+             (!('careNeeds' in data) || (data.careNeeds is string && data.careNeeds.size() <= 500)) &&
+             (!('contactMethod' in data) || (data.contactMethod is string && data.contactMethod.size() <= 200)) &&
+             (!('isUrgent' in data) || data.isUrgent is bool) &&
+             (!('mentalState' in data) || (data.mentalState is string && data.mentalState.size() <= 100)) &&
+             (!('visaStatus' in data) || (data.visaStatus is string && data.visaStatus in ['With', 'Without'])) &&
+             (!('foodMoney' in data) || (data.foodMoney is string && data.foodMoney in ['Yes', 'No']));
+    }
+
+    match /users/{userId} {
+      allow read: if isAuthenticated(); // Public profiles needed for stats and job posters
+      allow create: if isAuthenticated() && isValidUser(request.resource.data) && 
+                    ((isOwner(userId) && request.resource.data.role in ['caregiver', 'resident']) || isAdmin());
+      allow update: if isAuthenticated() && isValidUser(request.resource.data) && 
+                    ((isOwner(userId) && request.resource.data.role == resource.data.role) || isAdmin());
+      allow delete: if isOwner(userId) || isAdmin();
+    }
+
+    match /jobs/{jobId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && isValidJob(request.resource.data) && uidUnchanged();
+      allow update: if (isDocOwner() || isAdmin()) && isValidJob(request.resource.data) && uidNotModified();
+      allow delete: if isDocOwner() || isAdmin();
+    }
+  }
+}
