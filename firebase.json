@@ -1,0 +1,20 @@
+{
+  "auth": {
+    "providers": {
+      "googleSignIn": {
+        "enabled": true,
+        "oAuthBrandDisplayName": "CareMatch Israel",
+        "supportEmail": "alphingj@gmail.com",
+        "authorizedDomains": [
+          "carematch-israel-flame.vercel.app",
+          "carematch.co.in",
+          "www.carematch.co.in",
+          "localhost"
+        ]
+      }
+    }
+  },
+  "firestore": {
+    "rules": "firestore.rules"
+  }
+}
