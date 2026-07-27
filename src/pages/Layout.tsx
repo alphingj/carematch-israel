@@ -12,6 +12,7 @@ import { useJobAlerts } from '../hooks/useJobAlerts';
 import { HeartHandshake, LogOut, User as UserIcon, ShieldCheck, Globe, Home, Briefcase, PlusCircle, Github, Linkedin, Download } from 'lucide-react';
 import { useInstallPrompt } from '../hooks/useInstallPrompt';
 import { Analytics } from '@vercel/analytics/react';
+import { SpeedInsights } from '@vercel/speed-insights/react';
 
 export default function Layout() {
   useJobAlerts();
@@ -55,6 +56,7 @@ export default function Layout() {
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col font-sans" dir={dir}>
       <Analytics />
+      <SpeedInsights />
       <UserTour />
       <NotificationPrompt />
       <InstallPrompt />
