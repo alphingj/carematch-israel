@@ -108,6 +108,7 @@ const translations: Translations = {
     'Bedridden': 'מרותק למיטה',
     'With': 'עם',
     'Without': 'בלי',
+    'With/Without': 'עם/בלי',
     'Yes': 'כן',
     'No': 'לא',
     'Area 1': 'אזור 1',

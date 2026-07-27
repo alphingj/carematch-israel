@@ -185,6 +185,7 @@ export default function CreateJob() {
                   >
                     <option value="With">{t('With')}</option>
                     <option value="Without">{t('Without')}</option>
+                    <option value="With/Without">With/Without</option>
                   </select>
                 </div>
                 <div className="space-y-2">

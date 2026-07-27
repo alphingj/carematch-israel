@@ -75,7 +75,7 @@ service cloud.firestore {
              (!('contactMethod' in data) || (data.contactMethod is string && data.contactMethod.size() <= 200)) &&
              (!('isUrgent' in data) || data.isUrgent is bool) &&
              (!('mentalState' in data) || (data.mentalState is string && data.mentalState.size() <= 100)) &&
-              (!('visaStatus' in data) || (data.visaStatus is string && data.visaStatus in ['With', 'Without'])) &&
+              (!('visaStatus' in data) || (data.visaStatus is string && data.visaStatus in ['With', 'Without', 'With/Without'])) &&
               (!('foodMoney' in data) || (data.foodMoney is string && data.foodMoney in ['Yes', 'No'])) &&
               (!('place' in data) || (data.place is string && data.place.size() <= 100));
     }

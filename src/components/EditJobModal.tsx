@@ -98,6 +98,7 @@ export function EditJobModal({ job, onClose, onSaved }: EditJobModalProps) {
               <select name="visaStatus" value={form.visaStatus || 'With'} onChange={handleChange} className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white">
                 <option value="With">With</option>
                 <option value="Without">Without</option>
+                <option value="With/Without">With/Without</option>
               </select>
             </div>
             <div className="space-y-1">
