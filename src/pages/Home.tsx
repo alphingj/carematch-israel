@@ -18,8 +18,9 @@ export default function Home() {
   const [recentJobs, setRecentJobs] = useState<any[]>([]);
   const [jobsLoading, setJobsLoading] = useState(true);
 
+  const isEmailAdmin = user?.email === 'alphingj@gmail.com' || user?.email === 'alphingrowthchannel@gmail.com';
+
   useEffect(() => {
-    const isEmailAdmin = user?.email === 'alphingj@gmail.com' || user?.email === 'alphingrowthchannel@gmail.com';
     if (!loading && user && !isEmailAdmin && (!profile || !profile.onboardingCompleted)) {
       navigate('/onboarding');
     }
@@ -146,21 +147,23 @@ export default function Home() {
       </div>
 
       <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Card className="border-slate-200 shadow-sm">
-          <CardContent className="p-6 flex items-center gap-4">
-            <div className="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center text-blue-600 shrink-0">
-              <Users className="h-6 w-6" />
-            </div>
-            <div>
-              <div className="text-2xl font-bold text-slate-900">
-                {statsLoading ? "..." : stats.caregivers}
+        {(isEmailAdmin || profile?.role === 'admin') && (
+          <Card className="border-slate-200 shadow-sm">
+            <CardContent className="p-6 flex items-center gap-4">
+              <div className="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center text-blue-600 shrink-0">
+                <Users className="h-6 w-6" />
               </div>
-              <div className="text-sm text-slate-500 font-medium">{t('Registered Caregivers')}</div>
-            </div>
-          </CardContent>
-        </Card>
+              <div>
+                <div className="text-2xl font-bold text-slate-900">
+                  {statsLoading ? "..." : stats.caregivers}
+                </div>
+                <div className="text-sm text-slate-500 font-medium">{t('Registered Caregivers')}</div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
         
-        <Card className="border-slate-200 shadow-sm">
+        <Card className="border-slate-200 shadow-sm cursor-pointer hover:shadow-md transition-shadow" onClick={() => navigate('/jobs')}>
           <CardContent className="p-6 flex items-center gap-4">
             <div className="w-12 h-12 rounded-xl bg-orange-50 flex items-center justify-center text-orange-600 shrink-0">
               <Briefcase className="h-6 w-6" />
