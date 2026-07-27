@@ -38,7 +38,7 @@ export default function JobDetail() {
 
   const isEmailAdmin = auth.currentUser?.email === 'alphingj@gmail.com' || auth.currentUser?.email === 'alphingrowthchannel@gmail.com';
   const isAdmin = profile?.role === 'admin' || isEmailAdmin;
-  const isOwner = auth.currentUser?.uid === job.ownerId;
+  const isOwner = job ? auth.currentUser?.uid === job.ownerId : false;
   const canEdit = isOwner || isAdmin;
 
   const toggleActive = async () => {
