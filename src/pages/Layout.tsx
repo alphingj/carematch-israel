@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Outlet, Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
@@ -9,10 +9,17 @@ import { UserTour } from '../components/UserTour';
 import { NotificationPrompt } from '../components/NotificationPrompt';
 import { InstallPrompt } from '../components/InstallPrompt';
 import { useJobAlerts } from '../hooks/useJobAlerts';
-import { HeartHandshake, LogOut, User as UserIcon, ShieldCheck, Globe, Home, Briefcase, PlusCircle } from 'lucide-react';
+import { HeartHandshake, LogOut, User as UserIcon, ShieldCheck, Globe, Home, Briefcase, PlusCircle, Github, Linkedin, Download } from 'lucide-react';
+import { useInstallPrompt } from '../hooks/useInstallPrompt';
 
 export default function Layout() {
   useJobAlerts();
+  const install = useInstallPrompt();
+  const [isInstalled, setIsInstalled] = useState(false);
+
+  useEffect(() => {
+    setIsInstalled(window.matchMedia('(display-mode: standalone)').matches);
+  }, []);
   const { user, profile, loading } = useAuth();
   const { t, language, setLanguage, dir } = useLanguage();
   const navigate = useNavigate();
@@ -114,8 +121,41 @@ export default function Layout() {
         <Outlet />
       </main>
 
-      <footer className="bg-white border-t py-6 text-center text-slate-500 text-sm">
-        Made by Alphin GJ
+      <footer className="bg-white border-t py-8 text-center text-sm">
+        <div className="max-w-md mx-auto px-4 space-y-4">
+          <div className="flex items-center justify-center gap-3">
+            {install.deferred && !isInstalled && (
+              <button
+                onClick={install.prompt}
+                className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-full transition-colors shadow-sm"
+              >
+                <Download className="w-4 h-4" />
+                Install App
+              </button>
+            )}
+            <a
+              href="https://github.com/alphingj"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-slate-400 hover:text-slate-700 transition-colors p-2"
+              aria-label="GitHub"
+            >
+              <Github className="w-5 h-5" />
+            </a>
+            <a
+              href="https://linkedin.com/in/alphingj"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-slate-400 hover:text-blue-600 transition-colors p-2"
+              aria-label="LinkedIn"
+            >
+              <Linkedin className="w-5 h-5" />
+            </a>
+          </div>
+          <p className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-500 bg-clip-text text-transparent font-bold text-lg tracking-wide hover:scale-105 transition-transform inline-block">
+            Made by Alphin GJ
+          </p>
+        </div>
       </footer>
 
       <ConfirmModal 
