@@ -3,7 +3,8 @@ import { collection, onSnapshot, doc, updateDoc, deleteDoc } from 'firebase/fire
 import { db, handleFirestoreError, OperationType } from '../lib/firebase';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { Button } from '../components/ui/button';
-import { Shield, Users, Briefcase, Trash2, TrendingUp, MapPin, Globe } from 'lucide-react';
+import { EditJobModal } from '../components/EditJobModal';
+import { Shield, Users, Briefcase, Trash2, TrendingUp, MapPin, Globe, Pencil } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line } from 'recharts';
 
 const COLORS = ['#2563eb', '#f59e0b', '#10b981', '#ef4444', '#8b5cf6', '#ec4899', '#14b8a6', '#f97316'];
@@ -27,6 +28,7 @@ export default function Admin() {
   const [users, setUsers] = useState<any[]>([]);
   const [jobs, setJobs] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [editingJob, setEditingJob] = useState<any>(null);
 
   useEffect(() => {
     const unsubscribeUsers = onSnapshot(collection(db, 'users'), (snapshot) => {
@@ -252,7 +254,7 @@ export default function Admin() {
                 {jobs.map(job => (
                   <tr key={job.id} className="border-b">
                     <td className="px-4 py-3 font-medium text-slate-900">{job.title}</td>
-                    <td className="px-4 py-3">{users.find(u => u.uid === job.ownerId)?.name || 'Unknown'}</td>
+                    <td className="px-4 py-3">{users.find(u => u.id === job.ownerId)?.name || 'Unknown'}</td>
                     <td className="px-4 py-3">{job.area}{job.place ? ` — ${job.place}` : ''}</td>
                     <td className="px-4 py-3">{job.jobType}</td>
                     <td className="px-4 py-3">
@@ -261,7 +263,10 @@ export default function Admin() {
                       </span>
                     </td>
                     <td className="px-4 py-3">{formatDate(job.createdAt)}</td>
-                    <td className="px-4 py-3 text-right space-x-2">
+                    <td className="px-4 py-3 text-right space-x-2 whitespace-nowrap">
+                      <Button variant="outline" size="sm" onClick={() => setEditingJob(job)} className="text-blue-600 border-blue-200 hover:bg-blue-50">
+                        <Pencil className="w-3.5 h-3.5 mr-1" /> Edit
+                      </Button>
                       <Button variant="outline" size="sm" onClick={() => toggleJobStatus(job.id, job.active)} className="text-slate-600 border-slate-200">
                         {job.active ? 'Disable' : 'Enable'}
                       </Button>
@@ -318,6 +323,10 @@ export default function Admin() {
           </div>
         </CardContent>
       </Card>
+      {editingJob && (
+        <EditJobModal job={editingJob} onClose={() => setEditingJob(null)} onSaved={() => {
+        }} />
+      )}
     </div>
   );
 }
