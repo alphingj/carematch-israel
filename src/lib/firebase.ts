@@ -1,6 +1,7 @@
 import { initializeApp } from 'firebase/app';
 import { getAuth, GoogleAuthProvider, signInWithPopup, signOut } from 'firebase/auth';
-import { getFirestore } from 'firebase/firestore';
+import { getFirestore, doc, setDoc } from 'firebase/firestore';
+import { getMessaging, getToken, onMessage, isSupported } from 'firebase/messaging';
 import firebaseConfig from '../../firebase-applet-config.json';
 
 const app = initializeApp(firebaseConfig);
@@ -23,6 +24,54 @@ export const logout = async () => {
     console.error("Error signing out", error);
   }
 };
+
+let messaging: ReturnType<typeof getMessaging> | null = null;
+
+export async function getMessagingInstance() {
+  if (messaging) return messaging;
+  const supported = await isSupported();
+  if (!supported) return null;
+  messaging = getMessaging(app);
+  return messaging;
+}
+
+export async function requestNotificationPermission(): Promise<string | null> {
+  try {
+    const inst = await getMessagingInstance();
+    if (!inst) return null;
+
+    const permission = await Notification.requestPermission();
+    if (permission !== 'granted') return null;
+
+    const vapidKey = process.env.VITE_VAPID_KEY || '';
+    if (!vapidKey) return null;
+    const token = await getToken(inst, { vapidKey });
+
+    if (token && auth.currentUser) {
+      await setDoc(doc(db, 'users', auth.currentUser.uid), {
+        fcmToken: token,
+        notificationsEnabled: true
+      }, { merge: true });
+    }
+
+    return token;
+  } catch {
+    return null;
+  }
+}
+
+export async function disableNotifications() {
+  if (!auth.currentUser) return;
+  await setDoc(doc(db, 'users', auth.currentUser.uid), {
+    notificationsEnabled: false
+  }, { merge: true });
+}
+
+export function onForegroundMessage(callback: (payload: any) => void) {
+  getMessagingInstance().then(inst => {
+    if (inst) onMessage(inst, callback);
+  });
+}
 
 export enum OperationType {
   CREATE = 'create',

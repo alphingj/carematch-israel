@@ -6,6 +6,7 @@ import { loginWithGoogle, logout } from '../lib/firebase';
 import { Button } from '../components/ui/button';
 import { ConfirmModal } from '../components/ui/confirm-modal';
 import { UserTour } from '../components/UserTour';
+import { NotificationPrompt } from '../components/NotificationPrompt';
 import { HeartHandshake, LogOut, User as UserIcon, ShieldCheck, Globe, Home, Briefcase, PlusCircle } from 'lucide-react';
 
 export default function Layout() {
@@ -43,6 +44,7 @@ export default function Layout() {
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col font-sans" dir={dir}>
       <UserTour />
+      <NotificationPrompt />
       <header className="bg-white border-b sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2 text-blue-600 shrink-0">
