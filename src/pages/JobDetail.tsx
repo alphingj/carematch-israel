@@ -39,6 +39,17 @@ export default function JobDetail() {
   const isOwner = job ? auth.currentUser?.uid === job.ownerId : false;
   const canEdit = isOwner || isAdmin;
 
+  const isUrgent = useMemo(() => {
+    if (!job) return false;
+    if (!job.active) return false;
+    if (job.isUrgent) return true;
+    if (!job.startDate) return false;
+    const start = new Date(job.startDate);
+    if (isNaN(start.getTime())) return false;
+    const diffDays = Math.ceil((start.getTime() - Date.now()) / 86400000);
+    return diffDays >= -7 && diffDays <= 7;
+  }, [job?.startDate, job?.active, job?.isUrgent, job]);
+
   if (loading) {
     return (
       <div className="max-w-4xl mx-auto space-y-8 pb-12 animate-pulse">
@@ -79,16 +90,6 @@ export default function JobDetail() {
 
   const showCall = job.contactMethod === 'Call only' || job.contactMethod === 'Both';
   const showWhatsapp = job.contactMethod === 'Whatsapp Only' || job.contactMethod === 'Both' || !job.contactMethod;
-
-  const isUrgent = useMemo(() => {
-    if (!job.active) return false;
-    if (job.isUrgent) return true;
-    if (!job.startDate) return false;
-    const start = new Date(job.startDate);
-    if (isNaN(start.getTime())) return false;
-    const diffDays = Math.ceil((start.getTime() - Date.now()) / 86400000);
-    return diffDays >= -7 && diffDays <= 7;
-  }, [job.startDate, job.active, job.isUrgent]);
 
   return (
     <div className="max-w-4xl mx-auto space-y-8 pb-12">
