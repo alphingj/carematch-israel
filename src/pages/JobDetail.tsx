@@ -187,7 +187,7 @@ export default function JobDetail() {
               </div>
               <h1 className="text-3xl font-bold text-slate-900 mb-4 leading-tight">{job.title}</h1>
               <div className="flex flex-wrap items-center gap-6 text-sm text-slate-600 font-medium">
-                <span className="flex items-center gap-2"><MapPin className="h-5 w-5 text-slate-400" /> {t(job.area)}</span>
+                <span className="flex items-center gap-2"><MapPin className="h-5 w-5 text-slate-400" /> {t(job.area)}{job.place ? ` — ${job.place}` : ''}</span>
                 <span className="flex items-center gap-2"><Clock className="h-5 w-5 text-slate-400" /> {job.jobType}</span>
                 <span className="flex items-center gap-2"><Calendar className="h-5 w-5 text-slate-400" /> {job.startDate} {job.endDate ? `— ${job.endDate}` : ''}</span>
               </div>

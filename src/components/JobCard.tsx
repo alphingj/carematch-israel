@@ -100,7 +100,7 @@ export function JobCard({ job }: { job: any }) {
           </div>
           <div className="flex items-center gap-3">
             <MapPin className="w-4 h-4 text-slate-400" /> 
-            <span>{t(job.area)} {job.city ? `— ${job.city}` : ''}</span>
+            <span>{t(job.area)}{job.place ? ` — ${job.place}` : ''}</span>
           </div>
           {job.careNeeds && (
             <div className="flex items-center gap-3">

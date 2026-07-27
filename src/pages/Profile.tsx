@@ -155,6 +155,7 @@ export default function Profile() {
                     value={editForm.name} 
                     onChange={e => setEditForm(prev => ({ ...prev, name: e.target.value }))} 
                     className="h-10"
+                    autoComplete="name"
                   />
                 </div>
                 <div className="space-y-2">
@@ -173,6 +174,7 @@ export default function Profile() {
                         setEditForm(prev => ({ ...prev, phone: val.slice(0, 9) }));
                       }} 
                       maxLength={10}
+                      autoComplete="tel-national"
                     />
                   </div>
                 </div>

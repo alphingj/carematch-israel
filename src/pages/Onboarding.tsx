@@ -110,7 +110,7 @@ export default function Onboarding() {
             <div className="space-y-4">
               <div className="space-y-2">
                 <Label>{t('Full Name')}</Label>
-                <Input value={name} onChange={e => setName(e.target.value)} placeholder="John Doe" />
+                <Input value={name} onChange={e => setName(e.target.value)} placeholder="John Doe" autoComplete="name" />
               </div>
               <div className="space-y-2">
                 <Label>{t('Israel Phone Number')}</Label>
@@ -129,6 +129,7 @@ export default function Onboarding() {
                     }} 
                     placeholder="541234567" 
                     maxLength={10}
+                    autoComplete="tel-national"
                   />
                 </div>
               </div>

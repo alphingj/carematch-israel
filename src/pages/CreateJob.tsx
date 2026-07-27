@@ -17,13 +17,6 @@ export default function CreateJob() {
   const [submitting, setSubmitting] = useState(false);
   
   if (loading) return <div className="p-8 text-center">Loading...</div>;
-  if (profile?.role === 'caregiver') {
-    return (
-      <div className="p-8 text-center text-red-600">
-        Caregivers are not permitted to post job listings.
-      </div>
-    );
-  }
 
   const [formData, setFormData] = useState({
     title: '',
@@ -34,6 +27,7 @@ export default function CreateJob() {
     patientAge: '',
     languages: [] as string[],
     area: 'Area 1',
+    place: '',
     livingAtHome: 'Lives Alone',
     livingAtHomeOther: '',
     pets: 'None',
@@ -87,6 +81,7 @@ export default function CreateJob() {
         patientAge: parseInt(formData.patientAge, 10) || 0,
         languages: formData.languages,
         area: formData.area,
+        place: formData.place,
         livingAtHome: finalLivingAtHome,
         pets: finalPets,
         mentalState: formData.mentalState,
@@ -174,6 +169,10 @@ export default function CreateJob() {
                     <option value="Area 3">{t('Area 3')}</option>
                     <option value="All Area">{t('All Area')}</option>
                   </select>
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-slate-700 font-medium">{t('Place / City Name')} <span className="text-slate-400 font-normal">{t('(optional)')}</span></Label>
+                  <Input name="place" value={formData.place} onChange={handleChange} placeholder={t('e.g. Tel Aviv, Haifa, ...')} className="h-11" autoComplete="address-level2" />
                 </div>
                 <div className="space-y-2">
                   <Label className="text-slate-700 font-medium">{t('Visa Status')}</Label>
@@ -333,7 +332,7 @@ export default function CreateJob() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
                   <Label className="text-slate-700 font-medium">{t('Contact Name & Relation')}</Label>
-                  <Input name="contactName" value={formData.contactName} onChange={handleChange} placeholder={t('e.g. Sarah (Daughter)')} required className="h-11" />
+                  <Input name="contactName" value={formData.contactName} onChange={handleChange} placeholder={t('e.g. Sarah (Daughter)')} required className="h-11" autoComplete="name" />
                 </div>
                 <div className="space-y-2">
                   <Label className="text-slate-700 font-medium">{t('Contact Phone')}</Label>
@@ -354,6 +353,7 @@ export default function CreateJob() {
                       placeholder="541234567"
                       maxLength={10}
                       required
+                      autoComplete="tel-national"
                     />
                   </div>
                 </div>
