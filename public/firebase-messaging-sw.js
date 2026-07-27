@@ -13,13 +13,15 @@ firebase.initializeApp({
 
 const messaging = firebase.messaging();
 
+self.addEventListener('fetch', () => {});
+
 messaging.onBackgroundMessage((payload) => {
   const { notification } = payload;
   if (!notification) return;
 
   self.registration.showNotification(notification.title, {
     body: notification.body,
-    icon: '/favicon.svg',
+    icon: '/apple-touch-icon.png',
     clickAction: payload.data?.url || '/'
   });
 });

@@ -7,9 +7,12 @@ import { Button } from '../components/ui/button';
 import { ConfirmModal } from '../components/ui/confirm-modal';
 import { UserTour } from '../components/UserTour';
 import { NotificationPrompt } from '../components/NotificationPrompt';
+import { InstallPrompt } from '../components/InstallPrompt';
+import { useJobAlerts } from '../hooks/useJobAlerts';
 import { HeartHandshake, LogOut, User as UserIcon, ShieldCheck, Globe, Home, Briefcase, PlusCircle } from 'lucide-react';
 
 export default function Layout() {
+  useJobAlerts();
   const { user, profile, loading } = useAuth();
   const { t, language, setLanguage, dir } = useLanguage();
   const navigate = useNavigate();
@@ -45,6 +48,7 @@ export default function Layout() {
     <div className="min-h-screen bg-slate-50 flex flex-col font-sans" dir={dir}>
       <UserTour />
       <NotificationPrompt />
+      <InstallPrompt />
       <header className="bg-white border-b sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2 text-blue-600 shrink-0">
