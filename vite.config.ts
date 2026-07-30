@@ -14,7 +14,6 @@ export default defineConfig(() => {
       'process.env.messagingSenderId': JSON.stringify(process.env.messagingSenderId),
       'process.env.appId': JSON.stringify(process.env.appId),
       'process.env.measurementId': JSON.stringify(process.env.measurementId),
-      'process.env.GEMINI_API_KEY': JSON.stringify(process.env.GEMINI_API_KEY),
       'process.env.VITE_VAPID_KEY': JSON.stringify(process.env.VITE_VAPID_KEY),
     },
     resolve: {
