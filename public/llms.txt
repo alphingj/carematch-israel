@@ -1,0 +1,21 @@
+# CareMatch Israel
+> Platform connecting families with trusted caregivers, relievers, and nursing professionals across Israel.
+
+## Important pages
+- [Home](https://www.carematch.co.in/)
+- [Job Board](https://www.carematch.co.in/jobs)
+- [Post a Job](https://www.carematch.co.in/jobs/create)
+
+## About CareMatch Israel
+CareMatch Israel is a free platform for finding and posting caregiver jobs in Israel. Families can post caregiving positions, and caregivers can browse and apply to open jobs. Direct contact via WhatsApp or phone — no middlemen.
+
+## Key features
+- Post caregiver job listings with patient details, requirements, and contact info
+- Browse open caregiving positions filtered by area and job type
+- Direct WhatsApp and phone contact between families and caregivers
+- Available in English and Hebrew
+
+## Coverage areas
+- Area 1, Area 2, Area 3 across Israel
+- Permanent and reliever (temporary) caregiving positions
+- 24/7 care, part-time, and relief assignments
