@@ -63,12 +63,12 @@ export default function Layout() {
       <InstallPrompt />
       <header className="bg-white border-b sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-2 text-blue-600 shrink-0">
+          <Link to="/" aria-label="CareMatch Israel Home" className="flex items-center gap-2 text-blue-600 shrink-0">
             <HeartHandshake className="h-8 w-8" />
             <span className="font-bold text-xl tracking-tight text-slate-900 hidden sm:block">CareMatch Israel</span>
           </Link>
 
-          <nav className="flex items-center gap-3 sm:gap-4 overflow-x-auto no-scrollbar">
+          <nav aria-label="Main navigation" className="flex items-center gap-3 sm:gap-4 overflow-x-auto no-scrollbar">
             <div className="flex items-center bg-slate-200 rounded-md p-1 mr-1 sm:mr-2 shrink-0">
               <button 
                 onClick={() => handleLangClick('en')}
