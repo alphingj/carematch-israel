@@ -3,6 +3,7 @@ import { Outlet, Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { loginWithGoogle, logout } from '../lib/firebase';
+import { isAdminEmail } from '../lib/admin';
 import { Button } from '../components/ui/button';
 import { ConfirmModal } from '../components/ui/confirm-modal';
 import { UserTour } from '../components/UserTour';
@@ -50,7 +51,7 @@ export default function Layout() {
     navigate('/');
   };
 
-  const isEmailAdmin = user?.emailVerified && (user?.email === 'alphingj@gmail.com' || user?.email === 'alphingrowthchannel@gmail.com');
+  const isEmailAdmin = user?.emailVerified && isAdminEmail(user?.email);
   const isAdmin = profile?.role === 'admin' || isEmailAdmin;
 
   return (

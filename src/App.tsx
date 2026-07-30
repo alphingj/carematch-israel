@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import React, { Suspense, lazy } from 'react';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { LanguageProvider } from './contexts/LanguageContext';
+import { isAdminEmail } from './lib/admin';
 import Layout from './pages/Layout';
 
 // Lazy load pages for code splitting
@@ -19,7 +20,7 @@ function ProtectedRoute({ component: Component }: { component: React.ComponentTy
   if (loading) return <div className="flex justify-center p-8">Loading...</div>;
   if (!user) return <Navigate to="/" />;
   
-  const isEmailAdmin = user.emailVerified && (user.email === 'alphingj@gmail.com' || user.email === 'alphingrowthchannel@gmail.com');
+  const isEmailAdmin = user.emailVerified && isAdminEmail(user.email);
   if (!isEmailAdmin && (!profile || !profile.onboardingCompleted)) return <Navigate to="/onboarding" />;
   
   return <Component />;
@@ -30,7 +31,7 @@ function OnboardingRoute({ component: Component }: { component: React.ComponentT
   if (loading) return <div className="flex justify-center p-8">Loading...</div>;
   if (!user) return <Navigate to="/" />;
   
-  const isEmailAdmin = user.emailVerified && (user.email === 'alphingj@gmail.com' || user.email === 'alphingrowthchannel@gmail.com');
+  const isEmailAdmin = user.emailVerified && isAdminEmail(user.email);
   if (isEmailAdmin || profile?.onboardingCompleted) return <Navigate to="/jobs" />;
   
   return <Component />;
@@ -41,7 +42,7 @@ function AdminRoute({ component: Component }: { component: React.ComponentType }
   if (loading) return <div className="flex justify-center p-8">Loading...</div>;
   if (!user) return <Navigate to="/" />;
   
-  const isEmailAdmin = user.emailVerified && (user.email === 'alphingj@gmail.com' || user.email === 'alphingrowthchannel@gmail.com');
+  const isEmailAdmin = user.emailVerified && isAdminEmail(user.email);
   const isRoleAdmin = profile?.role === 'admin';
   
   if (!isEmailAdmin && !isRoleAdmin) return <Navigate to="/" />;

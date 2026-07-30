@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { collection, query, where, onSnapshot, doc, updateDoc, setDoc } from 'firebase/firestore';
 import { db, auth, handleFirestoreError, OperationType, logout } from '../lib/firebase';
+import { isAdminEmail } from '../lib/admin';
 import { useAuth } from '../contexts/AuthContext';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { Button } from '../components/ui/button';
@@ -122,7 +123,7 @@ export default function Profile() {
     }
   };
 
-  const isEmailAdmin = auth.currentUser?.emailVerified && (auth.currentUser?.email === 'alphingj@gmail.com' || auth.currentUser?.email === 'alphingrowthchannel@gmail.com');
+  const isEmailAdmin = auth.currentUser?.emailVerified && isAdminEmail(auth.currentUser?.email);
   if (!profile && !isEmailAdmin) return null;
 
   return (

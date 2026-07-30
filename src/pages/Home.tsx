@@ -1,24 +1,23 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { collection, query, where, getCountFromServer, getDocs, orderBy, limit } from 'firebase/firestore';
+import { collection, query, where, getDocs } from 'firebase/firestore';
 import { db, loginWithGoogle } from '../lib/firebase';
+import { isAdminEmail } from '../lib/admin';
 import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { Button } from '../components/ui/button';
 import { Card, CardContent } from '../components/ui/card';
-import { Users, Briefcase, UserCheck, ArrowRight, PlusCircle, HeartHandshake } from 'lucide-react';
+import { Briefcase, ArrowRight, PlusCircle, HeartHandshake } from 'lucide-react';
 import { JobCard } from '../components/JobCard';
 
 export default function Home() {
   const { user, profile, loading } = useAuth();
   const { t } = useLanguage();
   const navigate = useNavigate();
-  const [stats, setStats] = useState({ caregivers: 0, openJobs: 0 });
-  const [statsLoading, setStatsLoading] = useState(true);
   const [recentJobs, setRecentJobs] = useState<any[]>([]);
   const [jobsLoading, setJobsLoading] = useState(true);
 
-  const isEmailAdmin = user?.emailVerified && (user?.email === 'alphingj@gmail.com' || user?.email === 'alphingrowthchannel@gmail.com');
+  const isEmailAdmin = user?.emailVerified && isAdminEmail(user?.email);
 
   useEffect(() => {
     if (!loading && user && !isEmailAdmin && (!profile || !profile.onboardingCompleted)) {
@@ -27,23 +26,12 @@ export default function Home() {
   }, [user, profile, loading, navigate]);
 
   useEffect(() => {
-    async function fetchStats() {
+    async function fetchRecentJobs() {
       if (!user) {
-        setStatsLoading(false);
+        setJobsLoading(false);
         return;
       }
       try {
-        const caregiversQuery = query(collection(db, 'users'), where('role', '==', 'caregiver'));
-        const caregiversSnap = await getCountFromServer(caregiversQuery);
-
-        const jobsQuery = query(collection(db, 'jobs'), where('active', '==', true));
-        const jobsSnap = await getCountFromServer(jobsQuery);
-
-        setStats({
-          caregivers: caregiversSnap.data().count,
-          openJobs: jobsSnap.data().count
-        });
-
         const recentJobsQuery = query(collection(db, 'jobs'), where('active', '==', true));
         const recentJobsSnap = await getDocs(recentJobsQuery);
         const jobsData = recentJobsSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
@@ -58,13 +46,11 @@ export default function Home() {
         setRecentJobs(jobsData.slice(0, 3));
         setJobsLoading(false);
       } catch (error) {
-        console.error("Error fetching stats", error);
+        console.error("Error fetching jobs", error);
         setJobsLoading(false);
-      } finally {
-        setStatsLoading(false);
       }
     }
-    fetchStats();
+    fetchRecentJobs();
   }, [user]);
 
   if (!user) {
@@ -98,7 +84,7 @@ export default function Home() {
           <Card className="border-none shadow-sm bg-white hover:shadow-md transition-shadow">
             <CardContent className="p-8 text-center space-y-4">
               <div className="w-16 h-16 mx-auto bg-blue-50 rounded-2xl flex items-center justify-center text-blue-600">
-                <Users className="w-8 h-8" />
+                <HeartHandshake className="w-8 h-8" />
               </div>
               <h2 className="text-xl font-bold text-slate-900">{t('For Families')}</h2>
               <p className="text-slate-600 leading-relaxed">
@@ -145,38 +131,6 @@ export default function Home() {
           {t('Post a Job')}
         </Button>
       </div>
-
-      <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {(isEmailAdmin || profile?.role === 'admin') && (
-          <Card className="border-slate-200 shadow-sm">
-            <CardContent className="p-6 flex items-center gap-4">
-              <div className="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center text-blue-600 shrink-0">
-                <Users className="h-6 w-6" />
-              </div>
-              <div>
-                <div className="text-2xl font-bold text-slate-900">
-                  {statsLoading ? "..." : stats.caregivers}
-                </div>
-                <div className="text-sm text-slate-500 font-medium">{t('Registered Caregivers')}</div>
-              </div>
-            </CardContent>
-          </Card>
-        )}
-        
-        <Card className="border-slate-200 shadow-sm cursor-pointer hover:shadow-md transition-shadow" onClick={() => navigate('/jobs')}>
-          <CardContent className="p-6 flex items-center gap-4">
-            <div className="w-12 h-12 rounded-xl bg-orange-50 flex items-center justify-center text-orange-600 shrink-0">
-              <Briefcase className="h-6 w-6" />
-            </div>
-            <div>
-              <div className="text-2xl font-bold text-slate-900">
-                {statsLoading ? "..." : stats.openJobs}
-              </div>
-              <div className="text-sm text-slate-500 font-medium">{t('Open Jobs')}</div>
-            </div>
-          </CardContent>
-        </Card>
-      </section>
 
       <section className="space-y-6 pt-4">
         <div className="flex justify-between items-center">

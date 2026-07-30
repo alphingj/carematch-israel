@@ -36,7 +36,7 @@ exports.onNewInterest = functions.firestore
     try {
       await admin.messaging().send(message);
     } catch (error) {
-      console.error('Failed to send notification:', error);
+      functions.logger.error('Failed to send notification', error);
     }
   });
 
@@ -73,5 +73,5 @@ exports.onNewJob = functions.firestore
     const results = await Promise.allSettled(messages.map(m =>
       admin.messaging().send(m).catch(e => e)
     ));
-    console.log(`Sent ${results.filter(r => r.status === 'fulfilled').length}/${messages.length} notifications`);
+    functions.logger.info(`Sent ${results.filter(r => r.status === 'fulfilled').length}/${messages.length} notifications`);
   });
