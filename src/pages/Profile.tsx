@@ -122,7 +122,7 @@ export default function Profile() {
     }
   };
 
-  const isEmailAdmin = auth.currentUser?.email === 'alphingj@gmail.com' || auth.currentUser?.email === 'alphingrowthchannel@gmail.com';
+  const isEmailAdmin = auth.currentUser?.emailVerified && (auth.currentUser?.email === 'alphingj@gmail.com' || auth.currentUser?.email === 'alphingrowthchannel@gmail.com');
   if (!profile && !isEmailAdmin) return null;
 
   return (

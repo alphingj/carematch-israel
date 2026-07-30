@@ -50,7 +50,7 @@ export default function Layout() {
     navigate('/');
   };
 
-  const isEmailAdmin = user?.email === 'alphingj@gmail.com' || user?.email === 'alphingrowthchannel@gmail.com';
+  const isEmailAdmin = user?.emailVerified && (user?.email === 'alphingj@gmail.com' || user?.email === 'alphingrowthchannel@gmail.com');
   const isAdmin = profile?.role === 'admin' || isEmailAdmin;
 
   return (

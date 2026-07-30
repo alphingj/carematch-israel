@@ -34,7 +34,7 @@ export default function JobDetail() {
       .finally(() => setLoading(false));
   }, [id]);
 
-  const isEmailAdmin = auth.currentUser?.email === 'alphingj@gmail.com' || auth.currentUser?.email === 'alphingrowthchannel@gmail.com';
+  const isEmailAdmin = auth.currentUser?.emailVerified && (auth.currentUser?.email === 'alphingj@gmail.com' || auth.currentUser?.email === 'alphingrowthchannel@gmail.com');
   const isAdmin = profile?.role === 'admin' || isEmailAdmin;
   const isOwner = job ? auth.currentUser?.uid === job.ownerId : false;
   const canEdit = isOwner || isAdmin;

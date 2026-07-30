@@ -18,7 +18,7 @@ export default function Home() {
   const [recentJobs, setRecentJobs] = useState<any[]>([]);
   const [jobsLoading, setJobsLoading] = useState(true);
 
-  const isEmailAdmin = user?.email === 'alphingj@gmail.com' || user?.email === 'alphingrowthchannel@gmail.com';
+  const isEmailAdmin = user?.emailVerified && (user?.email === 'alphingj@gmail.com' || user?.email === 'alphingrowthchannel@gmail.com');
 
   useEffect(() => {
     if (!loading && user && !isEmailAdmin && (!profile || !profile.onboardingCompleted)) {
