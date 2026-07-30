@@ -67,7 +67,7 @@ export default function App() {
               } />
               <Route path="jobs" element={
                 <Suspense fallback={<div className="flex justify-center p-12"><div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div></div>}>
-                  <ProtectedRoute component={JobBoard} />
+                  <JobBoard />
                 </Suspense>
               } />
               <Route path="jobs/create" element={
@@ -77,7 +77,7 @@ export default function App() {
               } />
               <Route path="jobs/:id" element={
                 <Suspense fallback={<div className="flex justify-center p-12"><div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div></div>}>
-                  <ProtectedRoute component={JobDetail} />
+                  <JobDetail />
                 </Suspense>
               } />
               <Route path="profile" element={

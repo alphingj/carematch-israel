@@ -1,16 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { collection, query, where, onSnapshot } from 'firebase/firestore';
-import { db, handleFirestoreError, OperationType } from '../lib/firebase';
+import { db, handleFirestoreError, OperationType, loginWithGoogle } from '../lib/firebase';
 import { Card, CardContent } from '../components/ui/card';
 import { Skeleton } from '../components/ui/skeleton';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Link } from 'react-router-dom';
-import { Search, MapPin, Briefcase, PlusCircle } from 'lucide-react';
+import { Search, MapPin, Briefcase, PlusCircle, LogIn } from 'lucide-react';
 import { JobCard } from '../components/JobCard';
 import { useLanguage } from '../contexts/LanguageContext';
+import { useAuth } from '../contexts/AuthContext';
 
 export default function JobBoard() {
+  const { user } = useAuth();
   const [jobs, setJobs] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [areaFilter, setAreaFilter] = useState('');
@@ -57,12 +59,19 @@ export default function JobBoard() {
           <h1 className="text-3xl font-bold text-slate-900">{t('Job Board')}</h1>
           <p className="text-slate-500 mt-2 text-lg">{t('Browse and filter available caregiver positions')}</p>
         </div>
-        <Link to="/jobs/create">
-          <Button className="bg-blue-600 hover:bg-blue-700 text-white rounded-full px-8 h-12 text-base shadow-md shadow-blue-200">
-            <PlusCircle className="w-5 h-5 mr-2" />
-            {t('Post a Job')}
+        {user ? (
+          <Link to="/jobs/create">
+            <Button className="bg-blue-600 hover:bg-blue-700 text-white rounded-full px-8 h-12 text-base shadow-md shadow-blue-200">
+              <PlusCircle className="w-5 h-5 mr-2" />
+              {t('Post a Job')}
+            </Button>
+          </Link>
+        ) : (
+          <Button onClick={loginWithGoogle} className="bg-blue-600 hover:bg-blue-700 text-white rounded-full px-8 h-12 text-base shadow-md shadow-blue-200">
+            <LogIn className="w-5 h-5 mr-2" />
+            {t('nav.login')}
           </Button>
-        </Link>
+        )}
       </div>
 
       <Card className="border-slate-200 shadow-sm overflow-hidden">
