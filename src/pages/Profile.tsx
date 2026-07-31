@@ -38,6 +38,7 @@ export default function Profile() {
     workArea: '',
     workRequest: ''
   });
+  const [error, setError] = useState<string | null>(null);
 
   const handleLogout = async () => {
     await logout();
@@ -85,11 +86,13 @@ export default function Profile() {
   }, []);
 
   const toggleJobActive = async (jobId: string, currentStatus: boolean) => {
+    setError(null);
     try {
       await updateDoc(doc(db, 'jobs', jobId), { active: !currentStatus });
       setJobToDeactivate(null);
     } catch (error) {
       handleFirestoreError(error, OperationType.UPDATE, `jobs/${jobId}`);
+      setError('Failed to update job status. Please try again.');
     }
   };
 
@@ -103,6 +106,7 @@ export default function Profile() {
 
   const handleSaveProfile = async () => {
     if (!auth.currentUser) return;
+    setError(null);
     setUpdatingStatus(true);
     try {
       const updates: any = {
@@ -118,6 +122,7 @@ export default function Profile() {
       setIsEditing(false);
     } catch (error) {
       handleFirestoreError(error, OperationType.UPDATE, `users/${auth.currentUser.uid}`);
+      setError('Failed to save profile. Please try again.');
     } finally {
       setUpdatingStatus(false);
     }
@@ -148,6 +153,11 @@ export default function Profile() {
             )}
           </CardHeader>
           <CardContent className="p-6">
+            {error && (
+              <div className="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700" role="alert">
+                {error}
+              </div>
+            )}
             {isEditing ? (
               <div className="space-y-5">
                 <div className="space-y-2">

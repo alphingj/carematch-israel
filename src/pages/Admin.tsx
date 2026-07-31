@@ -4,7 +4,9 @@ import { db, handleFirestoreError, OperationType } from '../lib/firebase';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { EditJobModal } from '../components/EditJobModal';
-import { Shield, Users, Briefcase, Trash2, TrendingUp, MapPin, Globe, Pencil } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
+import { isAdminEmail } from '../lib/admin';
+import { Shield, Users, Briefcase, Trash2, TrendingUp, MapPin, Globe, Pencil, AlertCircle } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line } from 'recharts';
 
 const COLORS = ['#2563eb', '#f59e0b', '#10b981', '#ef4444', '#8b5cf6', '#ec4899', '#14b8a6', '#f97316'];
@@ -29,6 +31,10 @@ export default function Admin() {
   const [jobs, setJobs] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [editingJob, setEditingJob] = useState<any>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  const { user } = useAuth();
+  const currentUid = user?.uid;
 
   useEffect(() => {
     const unsubscribeUsers = onSnapshot(collection(db, 'users'), (snapshot) => {
@@ -55,28 +61,38 @@ export default function Admin() {
   }, []);
 
   const changeRole = async (userId: string, newRole: string) => {
+    if (userId === currentUid && newRole !== 'admin') {
+      setError('You cannot demote yourself from admin.');
+      return;
+    }
+    setError(null);
     try {
       await updateDoc(doc(db, 'users', userId), { role: newRole });
     } catch (error) {
       handleFirestoreError(error, OperationType.UPDATE, `users/${userId}`);
+      setError('Failed to change role. Please try again.');
     }
   };
 
   const deleteJob = async (jobId: string) => {
     if (window.confirm('Are you sure you want to delete this job posting? This action cannot be undone.')) {
+      setError(null);
       try {
         await deleteDoc(doc(db, 'jobs', jobId));
       } catch (error) {
         handleFirestoreError(error, OperationType.DELETE, `jobs/${jobId}`);
+        setError('Failed to delete job. Please try again.');
       }
     }
   };
 
   const toggleJobStatus = async (jobId: string, currentStatus: boolean) => {
+    setError(null);
     try {
       await updateDoc(doc(db, 'jobs', jobId), { active: !currentStatus });
     } catch (error) {
       handleFirestoreError(error, OperationType.UPDATE, `jobs/${jobId}`);
+      setError('Failed to update job status. Please try again.');
     }
   };
 
@@ -136,6 +152,12 @@ export default function Admin() {
       <h1 className="text-3xl font-bold text-slate-900 flex items-center gap-2">
         <Shield className="h-8 w-8 text-blue-600" /> Admin Dashboard
       </h1>
+
+      {error && (
+        <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700" role="alert">
+          {error}
+        </div>
+      )}
 
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
         <Card><CardHeader className="pb-2"><CardTitle className="text-sm font-medium text-slate-500">Total Users</CardTitle></CardHeader><CardContent><div className="text-3xl font-bold">{users.length}</div></CardContent></Card>
@@ -310,10 +332,10 @@ export default function Admin() {
                     </td>
                     <td className="px-4 py-3">{formatDate(u.createdAt)}</td>
                     <td className="px-4 py-3 text-right">
-                      <select className="text-sm border border-slate-200 rounded-md px-2 py-1 bg-white" value={u.role} onChange={(e) => changeRole(u.id, e.target.value)}>
+                      <select className="text-sm border border-slate-200 rounded-md px-2 py-1 bg-white" value={u.role} onChange={(e) => changeRole(u.id, e.target.value)} disabled={u.id === currentUid && u.role === 'admin'}>
                         <option value="resident">Resident</option>
                         <option value="caregiver">Caregiver</option>
-                        <option value="admin">Admin</option>
+                        <option value="admin" disabled={u.id === currentUid}>Admin</option>
                       </select>
                     </td>
                   </tr>

@@ -2,7 +2,6 @@ import React, { useEffect, useState, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { doc, getDoc } from 'firebase/firestore';
 import { db, auth } from '../lib/firebase';
-import { isAdminEmail } from '../lib/admin';
 import { useAuth } from '../contexts/AuthContext';
 import { Card, CardContent, CardHeader } from '../components/ui/card';
 import { Skeleton } from '../components/ui/skeleton';
@@ -34,11 +33,6 @@ export default function JobDetail() {
       })
       .finally(() => setLoading(false));
   }, [id]);
-
-  const isEmailAdmin = auth.currentUser?.emailVerified && isAdminEmail(auth.currentUser?.email);
-  const isAdmin = profile?.role === 'admin' || isEmailAdmin;
-  const isOwner = job ? auth.currentUser?.uid === job.ownerId : false;
-  const canEdit = isOwner || isAdmin;
 
   const isUrgent = useMemo(() => {
     if (!job) return false;
