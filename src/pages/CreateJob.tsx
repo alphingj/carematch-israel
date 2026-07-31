@@ -15,6 +15,7 @@ export default function CreateJob() {
   const { t } = useLanguage();
   const { profile, loading } = useAuth();
   const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   
   if (loading) return <div className="p-8 text-center">Loading...</div>;
 
@@ -63,7 +64,11 @@ export default function CreateJob() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!auth.currentUser) return;
+    setError(null);
+    if (!auth.currentUser) {
+      setError(t('You must be logged in to post a job.'));
+      return;
+    }
     setSubmitting(true);
 
     try {
@@ -100,6 +105,7 @@ export default function CreateJob() {
       navigate('/jobs');
     } catch (error) {
       handleFirestoreError(error, OperationType.CREATE, 'jobs');
+      setError(t('Failed to post your job. Please try again.'));
     } finally {
       setSubmitting(false);
     }
@@ -113,6 +119,11 @@ export default function CreateJob() {
       </div>
 
       <form onSubmit={handleSubmit}>
+        {error && (
+          <div className="mb-6 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700" role="alert">
+            {error}
+          </div>
+        )}
         <Card className="border-slate-200 shadow-sm overflow-hidden">
           <CardContent className="p-0">
             {/* Basic Info Section */}

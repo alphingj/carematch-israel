@@ -12,6 +12,7 @@ interface EditJobModalProps {
 
 export function EditJobModal({ job, onClose, onSaved }: EditJobModalProps) {
   const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [form, setForm] = useState({ ...job });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -30,6 +31,7 @@ export function EditJobModal({ job, onClose, onSaved }: EditJobModalProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError(null);
     setSaving(true);
     try {
       const updates: Record<string, any> = {};
@@ -49,6 +51,7 @@ export function EditJobModal({ job, onClose, onSaved }: EditJobModalProps) {
       onClose();
     } catch (error) {
       handleFirestoreError(error, OperationType.UPDATE, `jobs/${job.id}`);
+      setError('Failed to save changes. Please try again.');
     } finally {
       setSaving(false);
     }
@@ -61,6 +64,12 @@ export function EditJobModal({ job, onClose, onSaved }: EditJobModalProps) {
           <X className="w-5 h-5" />
         </button>
         <h2 className="text-xl font-bold text-slate-900 mb-6">Edit Job</h2>
+
+        {error && (
+          <div className="mb-6 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700" role="alert">
+            {error}
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

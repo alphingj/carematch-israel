@@ -27,6 +27,7 @@ export default function Onboarding() {
   const [step, setStep] = useState(1);
   const [role, setRole] = useState<'caregiver' | 'resident' | null>(null);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   // Form state
   const [name, setName] = useState('');
@@ -48,6 +49,7 @@ export default function Onboarding() {
 
   const handleSubmit = async () => {
     if (!auth.currentUser) return;
+    setError(null);
     setLoading(true);
     try {
       const userData: any = {
@@ -71,6 +73,7 @@ export default function Onboarding() {
       navigate('/jobs');
     } catch (error) {
       handleFirestoreError(error, OperationType.CREATE, `users/${auth.currentUser.uid}`);
+      setError(t('Failed to save your profile. Please try again.'));
     } finally {
       setLoading(false);
     }
@@ -83,6 +86,11 @@ export default function Onboarding() {
           <CardTitle className="text-2xl text-center">{t('Complete Your Profile')}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
+          {error && (
+            <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700" role="alert">
+              {error}
+            </div>
+          )}
           {step === 1 && (
             <div className="space-y-4">
               <Label className="text-base">{t('I am registering as a:')}</Label>
