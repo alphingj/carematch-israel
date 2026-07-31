@@ -1,12 +1,14 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, MemoryRouter, Routes, Route, Navigate } from 'react-router-dom';
 import React, { Suspense, lazy } from 'react';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { LanguageProvider } from './contexts/LanguageContext';
 import { isAdminEmail } from './lib/admin';
 import Layout from './pages/Layout';
+import Home from './pages/Home';
+
+const Router = (typeof window === 'undefined' ? MemoryRouter : BrowserRouter) as typeof MemoryRouter;
 
 // Lazy load pages for code splitting
-const Home = lazy(() => import('./pages/Home'));
 const Onboarding = lazy(() => import('./pages/Onboarding'));
 const JobBoard = lazy(() => import('./pages/JobBoard'));
 const CreateJob = lazy(() => import('./pages/CreateJob'));
@@ -53,7 +55,7 @@ export default function App() {
   return (
     <LanguageProvider>
       <AuthProvider>
-        <BrowserRouter>
+        <Router initialEntries={['/']}>
           <Routes>
             <Route path="/" element={<Layout />}>
               <Route index element={
@@ -98,7 +100,7 @@ export default function App() {
               } />
             </Route>
           </Routes>
-        </BrowserRouter>
+          </Router>
       </AuthProvider>
     </LanguageProvider>
   );
