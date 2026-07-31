@@ -6,15 +6,16 @@ import {vitePrerenderPlugin} from 'vite-prerender-plugin';
 
 export default defineConfig(({mode}) => {
   const env = loadEnv(mode, process.cwd(), '');
+  const isVercel = process.env.VERCEL === '1';
   return {
     plugins: [
       react(),
       tailwindcss(),
-      vitePrerenderPlugin({
+      !isVercel && vitePrerenderPlugin({
         renderTarget: '#root',
         prerenderScript: path.resolve(__dirname, 'src/prerender.tsx'),
       }),
-    ],
+    ].filter(Boolean),
     define: {
       'process.env.apiKey': JSON.stringify(env.apiKey),
       'process.env.authDomain': JSON.stringify(env.authDomain),
